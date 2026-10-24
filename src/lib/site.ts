@@ -4,7 +4,11 @@ export const site = {
   tagline: "Find the right deal. Know whether you qualify. Understand the real cost.",
   description:
     "Software discounts, student offers, promo codes, free trials and lifetime deals — with country eligibility, renewal prices and verification evidence.",
-  url: (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+  // On Vercel, fall back to the project's production domain so canonical URLs never point at localhost.
+  url: (
+    process.env.SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")
+  ).replace(/\/$/, ""),
   botUserAgent: process.env.CONNECTOR_USER_AGENT ?? "ClaimableBot/0.1 (+offer monitoring; contact via site)",
 };
 

@@ -1,4 +1,4 @@
-import { createDb, DEFAULT_DATABASE_URL, type Db } from "./connection";
+import { createDb, databaseUrl, type Db } from "./connection";
 
 export * from "./connection";
 
@@ -7,12 +7,13 @@ declare global {
 }
 
 /**
- * Shared connection pool, created on first use from DATABASE_URL.
+ * Shared connection pool, created on first use from DATABASE_URL (so builds never connect).
+ * In production a missing DATABASE_URL throws a clear error here instead of using localhost.
  * Reused across hot reloads in development and across test files.
  */
 export const db: Db = new Proxy({} as Db, {
   get(_target, property, receiver) {
-    globalThis.__claimableDb ??= createDb(process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL);
+    globalThis.__claimableDb ??= createDb(databaseUrl());
     const value = Reflect.get(globalThis.__claimableDb, property, receiver);
     return typeof value === "function" ? value.bind(globalThis.__claimableDb) : value;
   },
