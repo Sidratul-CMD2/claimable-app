@@ -69,7 +69,7 @@
 - Keep public pages search-friendly and handle expired pages deliberately; do not present this referral platform as the merchant in structured data.
 
 ## Confirmed commands (verified 2026-10-24)
-- Stack in use: Bun 1.4.4 (`~/.bun/bin`; no Node installed), Next.js 16.4.2, React 19.3, Drizzle 0.45, embedded PostgreSQL 18 on port 5433 (dev DB `claimable`, test DB `claimable_test`). Architecture decisions are in `docs/ARCHITECTURE.md`.
+- Stack in use: Bun 1.4.4 (`~/.bun/bin`; no Node installed), Next.js 16.4.6, React 19.3, Drizzle 0.45, embedded PostgreSQL 18 on port 5433 (dev DB `claimable`, test DB `claimable_test`). Architecture decisions are in `docs/ARCHITECTURE.md`.
 - `bun install` installs dependencies. `bun run dev` starts Postgres, runs migrations on both DBs, then starts Next on http://localhost:3000 and the job worker (add `-- --no-worker` to skip it).
 - Separate parts: `bun run db:start`, `bun run db:migrate` (add `-- --test` for the test DB), `bun run dev:web`, `bun run worker`.
 - Data: `bun run db:seed` (reference data plus the researched catalog; idempotent; `-- --update` applies catalog edits to untouched seed offers), `bun run db:seed:fixtures` (fictional; refused in production), `bun run admin:create`, `bun run jobs:run-due`.

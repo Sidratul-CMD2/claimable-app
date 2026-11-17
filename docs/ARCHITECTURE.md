@@ -4,7 +4,7 @@
 
 | Concern | Choice | Why | Revisit when |
 | --- | --- | --- | --- |
-| Web framework | Next.js 16.4.2 (App Router, Turbopack), React 19.3, TypeScript 5.9 | Brief's suggested stack; server rendering for SEO; Server Actions for admin mutations. 16.4.0 was replaced because of published advisories (GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr, GHSA-p3m5-59mp-jv5r). | — |
+| Web framework | Next.js 16.4.6 (App Router, Turbopack), React 19.3, TypeScript 5.9 | Brief's suggested stack; server rendering for SEO; Server Actions for admin mutations. 16.4.0 was replaced because of published advisories (GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr, GHSA-p3m5-59mp-jv5r); 16.4.2 was replaced by 16.4.6 for GHSA-mfr8-8qww-v76h and GHSA-vc7v-qv4w-wrv8 (`use cache` leaks; the app does not use `use cache`). | — |
 | Runtime / tooling | Bun 1.4.4 for install, scripts, tests (`bun test`) and the local dev server | Only JS runtime on the build machine. Application code avoids `Bun.*` APIs so production can run on Node 20.9+. | CI/hosting standardises on Node |
 | Database | PostgreSQL 18 (local: `embedded-postgres` binaries on port 5433; production: any managed Postgres via `DATABASE_URL`) | Real Postgres semantics, `pg_trgm` and `unaccent` for typo-tolerant search, durable job queue with `FOR UPDATE SKIP LOCKED`. No Docker required locally. | — |
 | ORM / migrations | Drizzle ORM 0.45 + drizzle-kit, `postgres` (postgres.js) driver | Typed SQL close to the metal; generated SQL migrations committed in `drizzle/`. `postgres` is bundled (not external) because Turbopack's hashed externals do not resolve under Bun. | — |
