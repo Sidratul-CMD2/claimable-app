@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "claimable-dev",
+      "runtimeExecutable": "/usr/bin/env",
+      "runtimeArgs": [
+        "LOCAL_PG_DIR=/Users/sidratuladib/Documents/Odd Station/Shits of 2026/Kafkaesque/Claude Code/Offer Page/.data/postgres",
+        "PATH=/Users/sidratuladib/.bun/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "/Users/sidratuladib/.bun/bin/bun",
+        "run",
+        "dev"
+      ],
+      "port": 3000
+    }
+  ]
+}
