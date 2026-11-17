@@ -23,8 +23,8 @@ export default function SiteHeader({ country, suggested, searchDefault = "" }: {
         <Link href="/" aria-label={`${site.name} home`} className="rounded-xl">
           <WarpText
             text={site.name}
-            className="h-11 w-[176px] md:h-[60px] md:w-[260px]"
-            textClassName="font-display text-[34px] font-extrabold tracking-[-0.055em] text-fg md:text-[46px]"
+            className="h-12 w-[200px] md:h-[74px] md:w-[320px] lg:h-[94px] lg:w-[408px]"
+            textClassName="font-display text-[38px] font-extrabold tracking-[-0.055em] text-fg md:text-[56px] lg:text-[72px]"
           />
         </Link>
         <div className="flex w-48 items-center justify-end gap-3">
