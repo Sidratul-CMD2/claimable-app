@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from "bun:test";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { resetHttpState } from "@/server/connectors/http";
 import { runPartnerFeed } from "@/server/connectors/partner-feed";
 import { runRssConnector } from "@/server/connectors/rss";
@@ -19,7 +19,7 @@ import {
   verificationRecords,
 } from "@/server/db/schema";
 import { claimDueJobs } from "@/server/jobs/queue";
-import { runDueJobs } from "@/server/jobs/runner";
+import { drainDueJobs, runDueJobs } from "@/server/jobs/runner";
 import { addCoupon, attachSource, createOffer, recordVerification, setPublicationStatus } from "@/server/services/admin-offers";
 import { createCompany } from "@/server/services/admin-catalog";
 import { getOfferDetail } from "@/server/services/offer-detail";
@@ -223,6 +223,26 @@ describe("durable job queue", () => {
     const delayMin = (after.nextRunAt.getTime() - Date.now()) / 60_000;
     expect(delayMin).toBeGreaterThan(3);
     expect(delayMin).toBeLessThan(6);
+  });
+
+  test("the cron drain runs every due job across several batches, once each, then stops", async () => {
+    // Park the existing jobs so only this test's jobs are due; later tests set their own run times.
+    await db.update(monitoringJobs).set({ nextRunAt: new Date(Date.now() + 86_400_000) });
+    const keys = Array.from({ length: 5 }, (_, i) => `test:drain:${i}`);
+    // archive_expired is a no-op here: nothing has expired yet in this file.
+    await db.insert(monitoringJobs).values(
+      keys.map((uniqueKey) => ({ kind: "archive_expired" as const, uniqueKey, intervalMinutes: 1440, nextRunAt: new Date(Date.now() - 1000), timeoutSeconds: 30 })),
+    );
+    try {
+      const summary = await drainDueJobs({ workerId: "cron-test", batchSize: 2, timeBudgetMs: 30_000 });
+      expect(summary).toHaveLength(5);
+      expect(new Set(summary.map((s) => s.jobId)).size).toBe(5);
+      expect(summary.every((s) => s.kind === "archive_expired" && s.status === "success")).toBe(true);
+      expect(await drainDueJobs({ workerId: "cron-test", batchSize: 2, timeBudgetMs: 30_000 })).toHaveLength(0);
+      expect(await drainDueJobs({ workerId: "cron-test", timeBudgetMs: 0 })).toHaveLength(0);
+    } finally {
+      await db.delete(monitoringJobs).where(inArray(monitoringJobs.uniqueKey, keys));
+    }
   });
 });
 

@@ -73,4 +73,6 @@ Rules:
 
 ## Production deployment (not performed)
 
-Any Node 20.9+ host that runs both `next start` and a long-lived `bun run worker` (or Node equivalent) process, with managed Postgres (backups enabled). On serverless hosts, schedule `GET /api/cron/tick` every 5–15 minutes with `Authorization: Bearer $CRON_SECRET` instead of running the worker.
+Any Node 20.9+ host that runs both `next start` and a long-lived `bun run worker` (or Node equivalent) process, with managed Postgres (backups enabled). On serverless hosts, schedule `GET /api/cron/tick` with `Authorization: Bearer $CRON_SECRET` instead of running the worker.
+
+**Vercel:** `vercel.json` registers a Vercel Cron job that calls `/api/cron/tick` daily at 06:00 UTC. Vercel sends `CRON_SECRET` as the bearer token automatically when the variable is set, and runs crons on production deployments only. Hobby allows only daily crons (a more frequent expression fails the deployment) and fires anywhere within the scheduled hour. On Pro, change the schedule to `*/10 * * * *`. Each call drains every due job in batches of 10 for up to 240 s (`maxDuration` 300 s, the Hobby maximum with Fluid compute), so a daily call still covers the whole queue. On Hobby, offer checks, expiry and connector runs therefore happen at most once a day.

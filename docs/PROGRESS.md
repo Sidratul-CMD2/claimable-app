@@ -44,14 +44,14 @@ Bugs found by these checks and fixed this session:
 
 ## 3. Implemented, not yet exercised end to end
 
-- **`/api/cron/tick` with a real `CRON_SECRET`:** only the 401 path has been checked.
+- **`/api/cron/tick` on Vercel:** checked locally on 2026-11-18 against a production build (`next start`, test DB): 401 without or with a wrong secret; 200 with the real secret, every due job run, and a second call finding nothing due. Not yet invoked by Vercel Cron itself.
 - **RSS discovery against real feeds:** no feeds are configured yet. **The partner feed** needs credentials.
 
 ## 4. Remaining work
 
 1. **Content (optional):** official coupon pages, historical promotions with sources for the calendar, the Microsoft 365 college offer, RSS feed URLs.
 2. **Docs (optional):** `SOURCES.md` and `VERIFICATION.md`. Their content is mostly in `DATA_MODEL.md` and `/methodology`.
-3. **Deployment (owner decisions):** host, managed Postgres, `SESSION_SECRET` and `CRON_SECRET`, `SITE_URL`, product name. Run `next start` plus `bun run worker`, or use the cron endpoint.
+3. **Deployment (owner decisions):** host, managed Postgres, `SESSION_SECRET` and `CRON_SECRET`, `SITE_URL`, product name. Run `next start` plus `bun run worker`, or use the cron endpoint. For Vercel, `vercel.json` already schedules the cron endpoint daily (see `ARCHITECTURE.md`).
 4. **Next phase (deferred by the brief):** visitor accounts, saved deals, follows, notifications.
 
 ## 5. Known issues and decisions

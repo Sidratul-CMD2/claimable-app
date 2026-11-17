@@ -40,3 +40,21 @@ export async function runDueJobs(opts: { workerId: string; limit?: number; onlyJ
   }
   return summary;
 }
+
+/**
+ * Runs due jobs batch after batch until none are left or the time budget is spent. Used by the
+ * cron endpoint, where a host such as Vercel Hobby may only call it once a day, so one call has to
+ * cover the whole queue. Retried failures back off for at least five minutes, so a job does not
+ * run twice within one call.
+ */
+export async function drainDueJobs(opts: { workerId: string; timeBudgetMs: number; batchSize?: number }): Promise<RunSummary[]> {
+  const deadline = Date.now() + opts.timeBudgetMs;
+  const batchSize = opts.batchSize ?? 10;
+  const summary: RunSummary[] = [];
+  while (Date.now() < deadline) {
+    const batch = await runDueJobs({ workerId: opts.workerId, limit: batchSize, timeBudgetMs: deadline - Date.now() });
+    summary.push(...batch);
+    if (batch.length < batchSize) break;
+  }
+  return summary;
+}
