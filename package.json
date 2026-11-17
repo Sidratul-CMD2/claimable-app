@@ -7,6 +7,7 @@
     "dev": "bun scripts/dev.ts",
     "dev:web": "next dev --port 3000",
     "build": "next build",
+    "vercel-build": "bun scripts/prepare-database.ts && next build",
     "start": "next start --port 3000",
     "worker": "bun scripts/worker.ts",
     "db:start": "bun scripts/db-start.ts",
